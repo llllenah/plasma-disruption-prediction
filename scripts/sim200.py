@@ -7,6 +7,7 @@ import json
 import sys
 
 import numpy as np
+import pandas as pd
 
 d = json.load(open(sys.argv[1], encoding="utf-8"))
 print(d["run"], d["summary"]["mechanisms"]["confusion"])
@@ -97,20 +98,28 @@ if len(sys.argv) > 2:
     a1.legend(frameon=False, fontsize=10.5, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
     a1.set_title("Модель тривоги v8 без донавчання", fontsize=13, color=INK, loc="left")
     names = ["Грінвальд", "кінк (q95)", "радіація"]
-    ok, as_gw, as_q = [16, 4, 14], [0, 12, 0], [0, 0, 3]
+    # як у fusion-sim (максимум λ по всьому розряду, включно з прогрівом на старті) і виправлено (лише кроки з плазмою);
+    # обидва — з онлайн-виходів моделі в measured.csv, work/fs_moment.py
+    fsm = pd.read_csv("work/fs_moment.csv")
+    shc = pd.read_csv(sys.argv[4]).set_index("shot_id")
+    fsm = fsm[~fsm.sid.map(shc.spontaneous) & ~fsm.sid.map(shc.wall_contact)]
     yy = np.arange(3)[::-1]
-    a2.barh(yy, ok, color=EME, label="визначено правильно")
-    a2.barh(yy, as_gw, left=ok, color=SLATE, label="названо Грінвальдом")
-    a2.barh(yy, as_q, left=np.add(ok, as_gw), color=ORA, label="названо кінком")
-    for yv, o, n in zip(yy, ok, np.add(np.add(ok, as_gw), as_q)):
-        a2.text(n + 0.3, yv, f"{o} з {n}", va="center", fontsize=12, color=INK, fontweight="bold")
+    for off, col, c, lab in [(0.2, "fs", SLATE, "як рахував симулятор (з прогрівом на старті)"),
+                             (-0.2, "ok", EME, "максимум λ лише там, де є плазма")]:
+        v = [((fsm.true == m) & (fsm[col] == m)).sum() for m in ("greenwald", "q95", "radiation")]
+        n = [(fsm.true == m).sum() for m in ("greenwald", "q95", "radiation")]
+        a2.barh(yy + off, v, 0.36, color=c, label=lab)
+        for yv, a, b in zip(yy + off, v, n):
+            a2.text(a + 0.3, yv, f"{a} з {b}", va="center", fontsize=11.5, color=INK, fontweight="bold" if col == "ok" else "normal")
     a2.set_yticks(yy, names)
     a2.set_xlim(0, 20)
     a2.set_xticks([0, 4, 8, 12, 16, 20])
-    a2.set_xlabel("зривів")
+    a2.set_xlabel("зривів, визначених правильно")
     a2.grid(axis="y", visible=False)
-    a2.legend(frameon=False, fontsize=10.5, loc="upper center", bbox_to_anchor=(0.45, -0.2), ncol=3)
-    a2.set_title("ImpactNet: головний механізм, 34 з 49", fontsize=13, color=INK, loc="left")
+    a2.legend(frameon=False, fontsize=10.5, loc="upper center", bbox_to_anchor=(0.45, -0.2), ncol=1)
+    tot_fs = (fsm.fs == fsm.true).sum()
+    tot_ok = (fsm.ok == fsm.true).sum()
+    a2.set_title(f"ImpactNet: механізм зриву, {tot_fs} → {tot_ok} з {len(fsm)}", fontsize=13, color=INK, loc="left")
     out = Path(sys.argv[3])
     fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
     print("→", out)
