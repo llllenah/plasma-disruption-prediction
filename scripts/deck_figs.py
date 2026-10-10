@@ -174,3 +174,12 @@ if (data / "measured.csv").exists():
     a2.legend(h1[:3] + h2, l1[:3] + l2, loc="upper left", fontsize=10.5, frameon=False, ncol=2)
     save(fig, "shot_trace.png")
     print(f"розряд {sid}: сценарій {r.scenario}, тривога за {tq - t[ia]:.2f} с, λ_max мережа {lam.max():.2f}, справжня {lam_true[t < tq].max():.2f}")
+
+# ── 7. вирізки для карток моделей (Додаток А) ──
+for src, box_, name in (("1.png", (40, 610, 1112, 745), "card_v6.png"), ("2.png", (26, 593, 1098, 727), "card_v6b.png"),
+                        ("12.png", (20, 600, 1112, 742), "card_ens5.png"), ("14.png", (12, 470, 888, 615), "card_xgb_phys.png"),
+                        ("15.png", (12, 470, 888, 615), "card_xgb_formula.png"), ("13.png", (12, 470, 888, 615), "card_xgb_dyn.png"),
+                        ("16.webp", (8, 655, 1080, 1185), "card_sim_impact.png"), ("16.webp", (8, 655, 1080, 830), "card_sim_tiles.png")):
+    crop(src, box_, name)
+for src, box_, name in (("3.webp", (28, 760, 545, 880), "card_v8_photo.png"), ("5.webp", (45, 535, 505, 675), "card_nocs_photo.png")):
+    crop(src, box_, name)
