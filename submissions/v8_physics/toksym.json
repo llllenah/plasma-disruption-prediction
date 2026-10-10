@@ -1,0 +1,15 @@
+{
+ "schema": 1,
+ "entry": "model.py",
+ "files": [
+  "features.py",
+  "weights.npz",
+  "config.json",
+  "q95_form.json"
+ ],
+ "requires": [
+  "numpy"
+ ],
+ "name": "two-head HGB",
+ "notes": "Голова A: передвісник (H=0.1 с). Голова B: близькість до меж (H=4.5 с), стиснута ×0.5. Ознаки — онлайн EMA фізичних величин (f_GW, q, β, P_rad/P_in, Dα, сідлова петля), сценарій із meta, нуль на спаді струму."
+}

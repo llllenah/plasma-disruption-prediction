@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+datasets/
+features*/
+runs/
+pod_results/
+risk_data/
+kit/
+*.parquet
+.DS_Store
