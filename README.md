@@ -93,7 +93,7 @@ risk_model/           ImpactNet training, labels, physics preprocessing, evaluat
 analysis/             simulator hazard formula, oracle & trigger-law studies
 scripts/              data generation, official scoring, RunPod pipelines, benchmarks
 results/              official score reports (summary CSV + gzipped full reports), ImpactNet evaluations
-docs/                 defense presentation (presentation.pptx: 14 main slides + appendix A with model cards)
+docs/                 defense presentation (presentation.pptx, 15 sections)
 ```
 
 ## Reproduce
