@@ -72,8 +72,8 @@ Architecture: 218 inputs (100 channels + 100 dropout masks + 18 physics quantiti
 A teammate's fork of fusionsimulator.io (Rust/WASM engine by Daniel Burgess and the Columbia Fusion Research Center, GPL-3.0). The team added the organisers' `toksym` workflow (dataset, test run, CAUGHT / FALSE ALARMS report, CSV downloads) and live actuator control from a model, so the alarm model + ImpactNet + an advisor run in a closed loop.
 
 * Closed loop: **11 → 5** disruptions on 40 discharges with automatic control.
-* Cause attribution on this engine (v8 + ImpactNet, 200 discharges): dominant mechanism correct in **34 / 49** disruptions. Greenwald 16 / 16 and radiation 14 / 17 are reliable, but kink only 4 / 16: the q95 share is underestimated (18 % vs 32 %).
-* The engine is noise-free, while our models were trained on noisy `toksym` diagnostics. The kink calibration does not transfer (49 / 49 on `toksym`). Next steps: add the `toksym` measurement chain and recalibrate q95.
+* Alarm model transfers to this noise-free engine **without retraining**: ROC AUC 0.902 at 0.1 s (0.934 on `toksym`), 0.970 at 30 ms (200 discharges, `results/fusionsim_v8_impact_200.json`).
+* Cause attribution: the simulator reported 34 / 49 (kink 4 / 16). We found it took the cause at the model's maximum λ over the *whole* shot, which falls on the network warm-up at t = 5 ms, before there is plasma (default answer "Greenwald 97.6 %"). Restricting the search to steps with plasma (Ip above the simulator threshold, before the quench) gives **45 / 49** (Greenwald 16 / 16, kink 15 / 16, radiation 14 / 17) from the same online outputs in `measured.csv`, with no retraining (`scripts/fs_moment.py`, `results/fusionsim_attribution_moment.csv`).
 
 ## Validation & honesty
 
