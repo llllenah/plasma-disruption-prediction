@@ -67,6 +67,14 @@ Exactly **5 output neurons**: Greenwald, q95 (kink), radiation, Troyon, other (l
 
 Architecture: 218 inputs (100 channels + 100 dropout masks + 18 physics quantities) → MLP → causal dilated convolutions (155 ms) → GRU(128) → 5 neurons + physics prior. Labels are the true mechanism risks computed from the simulator's hidden state (`--extras`); the hidden state is **never** an input. Architecture study: GRU ≈ LSTM ≈ TCN > no memory; GRU chosen for O(1) streaming state. See [`impactnet/README.md`](impactnet/README.md).
 
+## Closed-loop simulator ([lurbaby/plasma_simulator](https://github.com/lurbaby/plasma_simulator))
+
+A teammate's fork of fusionsimulator.io (Rust/WASM engine by Daniel Burgess and the Columbia Fusion Research Center, GPL-3.0). The team added the organisers' `toksym` workflow (dataset, test run, CAUGHT / FALSE ALARMS report, CSV downloads) and live actuator control from a model, so the alarm model + ImpactNet + an advisor run in a closed loop.
+
+* Closed loop: **11 → 5** disruptions on 40 discharges with automatic control.
+* Cause attribution on this engine (v8 + ImpactNet, 200 discharges): dominant mechanism correct in **34 / 49** disruptions. Greenwald 16 / 16 and radiation 14 / 17 are reliable, but kink only 4 / 16: the q95 share is underestimated (18 % vs 32 %).
+* The engine is noise-free, while our models were trained on noisy `toksym` diagnostics. The kink calibration does not transfer (49 / 49 on `toksym`). Next steps: add the `toksym` measurement chain and recalibrate q95.
+
 ## Validation & honesty
 
 * Features are computed step by step from the past only: the same class runs in training and in scoring.
