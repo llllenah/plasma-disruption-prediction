@@ -183,3 +183,21 @@ for src, box_, name in (("1.png", (40, 610, 1112, 745), "card_v6.png"), ("2.png"
     crop(src, box_, name)
 for src, box_, name in (("3.webp", (28, 760, 545, 880), "card_v8_photo.png"), ("5.webp", (45, 535, 505, 675), "card_nocs_photo.png")):
     crop(src, box_, name)
+
+# ── 8. діагностичні сигнали розряду (те, що бачить модель) ──
+if (data / "measured.csv").exists():
+    bolo = g[[f"bolo_{i:02d}" for i in range(1, 9)]].ffill().sum(axis=1)
+    panels = (("mag_ip_MA", g.mag_ip_MA.ffill(), "Iₚ, МА", IND), ("ifr_chord_core", g.ifr_chord_core.ffill(), "n̄ₑ (хорда), в. о.", ORA),
+              ("mag_saddle_lm", g.mag_saddle_lm.ffill().abs(), "|B_lm|, в. о.", VIO), ("bolo", bolo, "P_rad, МВт", AMB))
+    fig, axs = plt.subplots(4, 1, figsize=(11, 7.0), sharex=True, gridspec_kw=dict(hspace=0.12))
+    for ax, (_, y, lab, c) in zip(axs, panels):
+        ax.plot(t, y, color=c, lw=1.3)
+        ax.set_ylabel(lab, fontsize=11)
+        ax.axvline(tq, color=RED, lw=2.0)
+        ax.axvline(t[ia], color=EME, lw=1.6, ls="--")
+    axs[0].text(tq + 0.05, axs[0].get_ylim()[1] * 0.85, "термічне\nгасіння", color=RED, fontsize=11, va="top")
+    axs[0].text(t[ia] - 0.08, axs[0].get_ylim()[1] * 0.85, f"тривога\n(−{tq - t[ia]:.2f} с)".replace(".", ","), color=EME, fontsize=11, va="top", ha="right")
+    axs[-1].set_xlabel("час розряду, с")
+    fig.align_ylabels(axs)
+    axs[-1].set_xlim(max(0, tq - 8), tq + 0.5)
+    save(fig, "shot_signals.png")
