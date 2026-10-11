@@ -598,8 +598,47 @@ for x, url, head, sub in [(7.55, REPO, "Код, моделі, звіти зал�
     tb(s, x - 0.1, 3.95, 2.9, 1.2, [(head, dict(size=13, bold=True, align=PP_ALIGN.CENTER, after=2)),
                                     (url.replace("github.com/", "github.com/\n"), dict(size=10, color=IND, align=PP_ALIGN.CENTER, after=2))] +
        ([(sub, dict(size=10, color=MUTED, align=PP_ALIGN.CENTER))] if sub else []))
-tb(s, 0.6, 6.25, 8, 0.5, [("Дякуємо за увагу", dict(size=20, bold=True))])
+tb(s, 0.6, 6.25, 8, 0.5, [("Далі — демонстрація в реальному часі →", dict(size=18, bold=True, color=EME))])
 
+
+
+# ── 16 Демонстрація в реальному часі ──
+s = new_slide("16 Демонстрація: запобігання зриву в реальному часі", notes=(
+    "≈30 с і перехід до демо. Симулятор організаторів toksym генерує розряди й оцінює тривогу, але не дає змінювати "
+    "параметри плазми під час розряду, тож замкнений контур на ньому неможливий. Тому на основі відкритого рушія "
+    "fusionsimulator.io, на якому побудовано і toksym, ми зробили fusion-sim: усе, що вміє toksym, плюс керування уставками "
+    "в реальному часі моделлю і «тінь» — ту саму плазму без втручань для порівняння. Показуємо: JET, сценарій Density limit, "
+    "модель v8_fixer. Без fixer розряд зривається на 4–5 с, з fixer — ні."))
+tb(s, 0.6, 1.4, 6.6, 1.3, [([("Чому власний симулятор. ", dict(bold=True)),
+                             ("Симулятор організаторів toksym генерує розряди й оцінює тривогу, але не дає змінювати параметри "
+                              "плазми під час розряду, тож замкнений контур на ньому неможливий. Тому на основі відкритого рушія "
+                              "fusionsimulator.io, на якому побудовано і toksym, ми зробили власний — fusion-sim.", {})],
+                            dict(size=14))])
+tab_cap(s, 0.6, 2.95, 6.6, "Можливості симуляторів")
+rows = [["можливість", "toksym", "fusion-sim"],
+        ["генерація розрядів, залік моделі, звіт", "так", "так"],
+        ["зміна уставок під час розряду", "ні", "так, вручну або моделлю"],
+        ["модель керує плазмою в реальному часі", "ні", "так, fixer кожні 0,25 с"],
+        ["«тінь»: та сама плазма без втручань", "ні", "так, доказ «зірвалася б»"],
+        ["причини зриву в інтерфейсі", "ні", "так, частки ImpactNet"],
+        ["шум приладів", "так", "ні (наступний крок)"]]
+table(s, 0.6, 3.35, 6.6, rows, [3.3, 1.2, 2.1], row_h=0.44, sizes=[[11] * 3] + [[11, 12, 11]] * 6)
+box(s, 7.65, 1.4, 5.1, 3.2, "ECFDF5", EME, shape=MSO_SHAPE.RECTANGLE, lw=1.25)
+tb(s, 7.9, 1.55, 4.65, 3.6, [
+    ("Що покажемо наживо", dict(size=16, bold=True, color=EME, after=8)),
+    ("JET → сценарій Density limit → паливо DD, модель v8_fixer", dict(size=13, after=8)),
+    ("Без fixer: розряд зривається на 4–5 с", dict(size=13, after=6)),
+    ("З fixer: ⚠ ПРОГНОЗ ЗРИВУ → FIXER ВНІС ЗМІНИ → ✓ Зрив відвернуто", dict(size=13, bold=True, after=6)),
+    ("«Тінь» поруч показує, що та сама плазма без fixer зірвалася б", dict(size=13))])
+link = s.shapes.add_textbox(Inches(7.65), Inches(4.85), Inches(5.1), Inches(0.45))
+lt = link.text_frame
+lt.margin_left = lt.margin_right = lt.margin_top = lt.margin_bottom = 0
+r = lt.paragraphs[0].add_run()
+r.text = "Відкрити симулятор: http://127.0.0.1:9999"
+r.font.name, r.font.size, r.font.bold, r.font.color.rgb = FONT, Pt(14), True, rgb(IND)
+r.hyperlink.address = "http://127.0.0.1:9999/"
+tb(s, 7.65, 5.3, 5.1, 0.4, [(SIM_REPO, dict(size=11, color=MUTED))])
+tb(s, 7.65, 6.15, 5.1, 0.5, [("Дякуємо за увагу", dict(size=20, bold=True))])
 
 assert DC._n[0] == TOTAL, DC._n[0]
 prs.save(OUT)
